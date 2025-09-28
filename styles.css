@@ -1,0 +1,460 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Courier New', monospace;
+    background: #000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    overflow: hidden;
+}
+
+#gameContainer {
+    position: relative;
+    width: 288px;
+    height: 512px;
+    border: 2px solid #333;
+    background: #87CEEB;
+}
+
+#gameCanvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: crisp-edges;
+}
+
+/* Screen Overlays */
+.screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: rgba(135, 206, 235, 0.95);
+    color: #000;
+    z-index: 10;
+}
+
+.home-content, .shop-content, .game-over-content {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+}
+
+/* Home Screen */
+.top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.coins {
+    font-size: 14px;
+    font-weight: bold;
+    color: #000;
+}
+
+h1 {
+    font-size: 24px;
+    margin: 20px 0;
+    text-align: center;
+    text-shadow: 2px 2px 0px #fff;
+}
+
+h2 {
+    font-size: 20px;
+    margin: 10px 0;
+    text-align: center;
+}
+
+.difficulty-options {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.difficulty-option {
+    padding: 15px 20px;
+    border: 2px solid #000;
+    background: rgba(255, 255, 255, 0.9);
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s;
+}
+
+.difficulty-option:hover {
+    background: rgba(255, 255, 255, 1);
+    transform: scale(1.05);
+}
+
+.difficulty-option h3 {
+    font-size: 18px;
+    margin-bottom: 5px;
+}
+
+.difficulty-option p {
+    font-size: 14px;
+    color: #555;
+}
+
+/* Buttons */
+.btn {
+    padding: 8px 12px;
+    border: 2px solid #000;
+    background: #000;
+    color: #fff;
+    font-family: inherit;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+.btn:hover {
+    background: #333;
+}
+
+.btn.danger {
+    background: #c00;
+    border-color: #c00;
+}
+
+.btn.danger:hover {
+    background: #a00;
+}
+
+.btn.success {
+    background: #090;
+    border-color: #090;
+}
+
+.btn.success:hover {
+    background: #070;
+}
+
+.btn.secondary {
+    background: #666;
+    border-color: #666;
+    font-size: 9px;
+    padding: 6px 8px;
+    flex: 1;
+    min-width: 60px;
+}
+
+.btn.secondary:hover {
+    background: #555;
+}
+
+/* Shop */
+.shop-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.shop-items {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+    max-height: 300px;
+    overflow-y: auto;
+    margin: 10px 0;
+}
+
+.shop-item {
+    padding: 10px 15px;
+    border: 2px solid #000;
+    background: #666;
+    color: #fff;
+    font-family: inherit;
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+}
+
+.shop-item:hover {
+    background: #555;
+}
+
+.shop-item.owned {
+    background: #090;
+}
+
+.shop-item.selected {
+    background: #00c;
+    border-color: #fff;
+}
+
+.shop-item.power-item {
+    padding: 8px 12px;
+    height: auto;
+}
+
+.power-desc {
+    font-size: 9px;
+    margin-top: 4px;
+    opacity: 0.9;
+}
+
+.shop-item.music-item {
+    padding: 8px 12px;
+    height: auto;
+}
+
+.music-controls {
+    font-size: 9px;
+    margin-top: 4px;
+    opacity: 0.9;
+}
+
+.shop-nav {
+    display: flex;
+    gap: 2px;
+    margin-top: auto;
+    width: 100%;
+    justify-content: space-between;
+}
+
+/* Game Over Screen */
+.game-over-content {
+    background: rgba(135, 206, 250, 0.9);
+    justify-content: center;
+}
+
+.game-over-buttons {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.game-over-buttons p {
+    margin: 10px 0;
+    font-size: 12px;
+}
+
+/* Confirm Reset */
+.confirm-dialog {
+    background: #fff;
+    padding: 30px;
+    border: 3px solid #000;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 0 20px rgba(0,0,0,0.5);
+}
+
+.confirm-buttons {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+/* Game UI */
+.game-ui {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 5;
+    display: none;
+}
+
+.top-left {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    font-size: 12px;
+    color: #000;
+    background: rgba(255, 255, 255, 0.8);
+    padding: 4px 8px;
+    border-radius: 4px;
+}
+
+.music-status {
+    position: absolute;
+    top: 35px;
+    left: 10px;
+    font-size: 10px;
+    color: #000;
+    background: rgba(255, 255, 255, 0.8);
+    padding: 2px 6px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.score-display {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    text-align: right;
+    font-size: 12px;
+    color: #000;
+    background: rgba(255, 255, 255, 0.8);
+    padding: 8px;
+    border-radius: 4px;
+}
+
+.score-display div {
+    margin: 2px 0;
+}
+
+.power-bars {
+    position: absolute;
+    bottom: 60px;
+    left: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.power-bar-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 4px 8px;
+    border-radius: 4px;
+}
+
+.power-label {
+    color: #fff;
+    font-size: 10px;
+    font-weight: bold;
+    min-width: 15px;
+}
+
+.power-bar {
+    width: 60px;
+    height: 6px;
+    background: #333;
+    border: 1px solid #fff;
+    position: relative;
+    overflow: hidden;
+}
+
+.power-bar-fill {
+    height: 100%;
+    transition: width 0.1s ease;
+}
+
+.power-status {
+    color: #fff;
+    font-size: 8px;
+    min-width: 35px;
+}
+
+.shield-indicator {
+    position: absolute;
+    bottom: 20px;
+    left: 10px;
+    background: rgba(0, 255, 255, 0.9);
+    color: #000;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: bold;
+    display: none;
+    animation: shield-pulse 0.5s ease-in-out infinite alternate;
+}
+
+@keyframes shield-pulse {
+    from { background: rgba(0, 255, 255, 0.9); }
+    to { background: rgba(0, 255, 255, 0.6); }
+}
+
+/* Scrollbar styling for shop items */
+.shop-items::-webkit-scrollbar {
+    width: 8px;
+}
+
+.shop-items::-webkit-scrollbar-track {
+    background: #333;
+}
+
+.shop-items::-webkit-scrollbar-thumb {
+    background: #666;
+    border-radius: 4px;
+}
+
+.shop-items::-webkit-scrollbar-thumb:hover {
+    background: #888;
+}
+
+/* Responsive adjustments */
+@media (max-width: 320px) {
+    #gameContainer {
+        width: 100vw;
+        height: 100vh;
+        border: none;
+    }
+
+    .btn {
+        font-size: 10px;
+        padding: 6px 10px;
+    }
+
+    h1 {
+        font-size: 20px;
+    }
+
+    .difficulty-option {
+        padding: 12px 15px;
+    }
+
+    .shop-item {
+        font-size: 10px;
+        padding: 8px 12px;
+    }
+}
+
+/* Pixel-perfect rendering */
+canvas, .game-ui {
+    image-rendering: -moz-crisp-edges;
+    image-rendering: -webkit-crisp-edges;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+}
+
+/* Touch-friendly buttons for mobile */
+@media (hover: none) {
+    .btn, .shop-item, .difficulty-option {
+        min-height: 44px;
+    }
+
+    .difficulty-option:active {
+        background: rgba(255, 255, 255, 1);
+        transform: scale(0.98);
+    }
+
+    .btn:active {
+        transform: scale(0.95);
+    }
+
+    .shop-item:active {
+        transform: scale(0.98);
+    }
+}

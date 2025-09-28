@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flappy Bird Plus</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="gameContainer">
+        <canvas id="gameCanvas" width="288" height="512"></canvas>
+
+        <!-- UI Overlays -->
+        <div id="homeScreen" class="screen">
+            <div class="home-content">
+                <div class="top-bar">
+                    <div class="coins">Coins: <span id="totalCoins">0</span></div>
+                    <button id="shopBtn" class="btn">SHOP</button>
+                    <button id="newGameBtn" class="btn danger">NEW GAME</button>
+                </div>
+
+                <h1>Select Difficulty</h1>
+
+                <div class="difficulty-options">
+                    <div class="difficulty-option" data-difficulty="EASY">
+                        <h3>1. EASY</h3>
+                        <p>High Score: <span class="high-score" data-difficulty="EASY">0</span></p>
+                    </div>
+                    <div class="difficulty-option" data-difficulty="NORMAL">
+                        <h3>2. NORMAL</h3>
+                        <p>High Score: <span class="high-score" data-difficulty="NORMAL">0</span></p>
+                    </div>
+                    <div class="difficulty-option" data-difficulty="HARD">
+                        <h3>3. HARD</h3>
+                        <p>High Score: <span class="high-score" data-difficulty="HARD">0</span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="gameOverScreen" class="screen">
+            <div class="game-over-content">
+                <h1>GAME OVER</h1>
+                <p>Coins Earned: <span id="coinsEarned">0</span></p>
+                <p>Score: <span id="finalScore">0</span></p>
+                <p>High Score: <span id="finalHighScore">0</span></p>
+                <div class="game-over-buttons">
+                    <p>Press SPACE to try again</p>
+                    <button id="homeBtn" class="btn">HOME</button>
+                    <p>or press H</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="shopScreen" class="screen">
+            <div class="shop-content">
+                <div class="shop-header">
+                    <button id="shopBackBtn" class="btn">BACK</button>
+                    <div class="coins">Coins: <span id="shopCoins">0</span></div>
+                </div>
+
+                <h1>Bird Skins</h1>
+
+                <div id="skinOptions" class="shop-items"></div>
+
+                <div class="shop-nav">
+                    <button id="backgroundsBtn" class="btn secondary">BACKGROUNDS</button>
+                    <button id="powersBtn" class="btn secondary">POWERS</button>
+                    <button id="particlesBtn" class="btn secondary">PARTICLES</button>
+                    <button id="musicBtn" class="btn secondary">MUSIC</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="backgroundShop" class="screen">
+            <div class="shop-content">
+                <div class="shop-header">
+                    <button id="bgBackBtn" class="btn">BACK</button>
+                    <div class="coins">Coins: <span id="bgCoins">0</span></div>
+                </div>
+                <h1>Backgrounds</h1>
+                <div id="backgroundOptions" class="shop-items"></div>
+            </div>
+        </div>
+
+        <div id="powerShop" class="screen">
+            <div class="shop-content">
+                <div class="shop-header">
+                    <button id="powerBackBtn" class="btn">BACK</button>
+                    <div class="coins">Coins: <span id="powerCoins">0</span></div>
+                </div>
+                <h1>Superpowers</h1>
+                <div id="powerOptions" class="shop-items"></div>
+            </div>
+        </div>
+
+        <div id="particleShop" class="screen">
+            <div class="shop-content">
+                <div class="shop-header">
+                    <button id="particleBackBtn" class="btn">BACK</button>
+                    <div class="coins">Coins: <span id="particleCoins">0</span></div>
+                </div>
+                <h1>Particle Effects</h1>
+                <p>Current: <span id="currentParticle">None</span></p>
+                <div id="particleOptions" class="shop-items"></div>
+            </div>
+        </div>
+
+        <div id="musicShop" class="screen">
+            <div class="shop-content">
+                <div class="shop-header">
+                    <button id="musicBackBtn" class="btn">BACK</button>
+                    <div class="coins">Coins: <span id="musicCoins">0</span></div>
+                </div>
+                <h1>Background Music</h1>
+                <p>Current: <span id="currentMusicTrack">Original Theme</span></p>
+                <div id="musicOptions" class="shop-items"></div>
+            </div>
+        </div>
+
+        <div id="confirmReset" class="screen">
+            <div class="confirm-dialog">
+                <h2>Are you sure?</h2>
+                <p>This will delete all</p>
+                <p>progress and coins!</p>
+                <div class="confirm-buttons">
+                    <button id="confirmYes" class="btn danger">YES</button>
+                    <button id="confirmNo" class="btn success">NO</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Game UI (visible during gameplay) -->
+        <div id="gameUI" class="game-ui">
+            <div class="top-left">ESC: Return to Menu</div>
+            <div id="musicStatus" class="music-status">🎵 Music: Loading...</div>
+            <div class="score-display">
+                <div>Score: <span id="currentScore">0</span></div>
+                <div>Coins: <span id="currentCoins">0</span></div>
+                <div>High Score: <span id="currentHighScore">0</span></div>
+            </div>
+            <div id="powerBars" class="power-bars"></div>
+            <div id="shieldIndicator" class="shield-indicator"></div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
