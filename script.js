@@ -622,7 +622,7 @@ class Game {
 
     resetAllData() {
         this.highScore = { EASY: 0, NORMAL: 0, HARD: 0 };
-        this.totalCoins = 1000;
+        this.totalCoins = 0;
         this.ownedSkins = { default: true };
         this.currentSkin = 'default';
         this.ownedBackgrounds = { default: true };
@@ -632,6 +632,13 @@ class Game {
         this.currentParticle = 'none';
         this.ownedMusic = { default: true, none: true };
         this.currentMusic = 'default';
+        this.score = 0;
+        this.saveGameData();
+    }
+
+    resetCoinsOnly() {
+        // Only reset coins, keep all other progress
+        this.totalCoins = 0;
         this.score = 0;
         this.saveGameData();
     }
@@ -647,7 +654,9 @@ class Game {
         });
         document.getElementById('newGameBtn').addEventListener('click', () => {
             this.tryPlayBackgroundMusic();
-            this.setState(GameState.CONFIRM_RESET);
+            this.resetAllData();
+            this.setState(GameState.HOME);
+            this.updateUI();
         });
         document.getElementById('homeBtn').addEventListener('click', () => {
             this.tryPlayBackgroundMusic();
