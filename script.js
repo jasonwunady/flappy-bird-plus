@@ -654,9 +654,7 @@ class Game {
         });
         document.getElementById('newGameBtn').addEventListener('click', () => {
             this.tryPlayBackgroundMusic();
-            this.resetAllData();
-            this.setState(GameState.HOME);
-            this.updateUI();
+            this.setState(GameState.CONFIRM_RESET);
         });
         document.getElementById('homeBtn').addEventListener('click', () => {
             this.tryPlayBackgroundMusic();
