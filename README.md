@@ -96,11 +96,8 @@ The project includes several utility scripts for asset generation:
 
 This project is open source. Feel free to modify and distribute.
 
-## Contributing
+## Todo
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Submit a pull request
+1. Make this game playable from a web browser
 
 Enjoy playing Flappy Bird Plus!
