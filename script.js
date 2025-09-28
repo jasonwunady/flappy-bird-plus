@@ -307,12 +307,38 @@ class AssetLoader {
     setupMusicTrack(audio, musicId) {
         // Set up music properties
         audio.loop = true;
-        audio.volume = 0.3;
         audio.preload = 'auto';
+
+        // Apply different audio characteristics for each track
+        switch(musicId) {
+            case 'default':
+                audio.volume = 0.3;
+                audio.playbackRate = 1.0;
+                break;
+            case 'classic':
+                audio.volume = 0.35;
+                audio.playbackRate = 0.9; // Slightly slower, more retro feel
+                break;
+            case 'ambient':
+                audio.volume = 0.2; // Quieter, more ambient
+                audio.playbackRate = 0.8; // Much slower, dreamy
+                break;
+            case 'electronic':
+                audio.volume = 0.4; // Louder, more energetic
+                audio.playbackRate = 1.15; // Faster, more upbeat
+                break;
+            case 'peaceful':
+                audio.volume = 0.25; // Quiet and peaceful
+                audio.playbackRate = 0.85; // Slower, more relaxing
+                break;
+            default:
+                audio.volume = 0.3;
+                audio.playbackRate = 1.0;
+        }
 
         // Add event listeners (these will be handled by the Game class)
         audio.addEventListener('play', () => {
-            console.log(`Music ${musicId} started playing`);
+            console.log(`Music ${musicId} started playing (rate: ${audio.playbackRate}, volume: ${audio.volume})`);
         });
         audio.addEventListener('pause', () => {
             console.log(`Music ${musicId} paused`);
@@ -475,12 +501,12 @@ class Game {
         this.currentMusic = 'default';
         this.ownedMusic = { default: true, none: true };
         this.availableMusic = {
-            none: { price: 0, name: 'No Music', file: null },
-            default: { price: 0, name: 'Original Theme', file: 'sounds/background-music.mp3' },
-            classic: { price: 75, name: 'Classic Arcade', file: 'sounds/classic.mp3' },
-            ambient: { price: 100, name: 'Ambient Sky', file: 'sounds/ambient.mp3' },
-            electronic: { price: 125, name: 'Electronic Beat', file: 'sounds/electronic.mp3' },
-            peaceful: { price: 150, name: 'Peaceful Garden', file: 'sounds/peaceful.mp3' }
+            none: { price: 0, name: 'No Music', file: null, description: 'Complete silence' },
+            default: { price: 0, name: 'Original Theme', file: 'sounds/background-music.mp3', description: 'Normal speed & volume' },
+            classic: { price: 75, name: 'Classic Arcade', file: 'sounds/classic.mp3', description: 'Slower retro feel' },
+            ambient: { price: 100, name: 'Ambient Sky', file: 'sounds/ambient.mp3', description: 'Quiet & dreamy' },
+            electronic: { price: 125, name: 'Electronic Beat', file: 'sounds/electronic.mp3', description: 'Fast & energetic' },
+            peaceful: { price: 150, name: 'Peaceful Garden', file: 'sounds/peaceful.mp3', description: 'Soft & relaxing' }
         };
 
         this.powerCooldowns = {};
@@ -1097,12 +1123,18 @@ class Game {
             if (musicId === this.currentMusic) {
                 button.classList.add('selected');
                 button.innerHTML = `<div>${musicData.name} - SELECTED</div>`;
+                if (musicData.description) {
+                    button.innerHTML += `<div class="music-controls">${musicData.description}</div>`;
+                }
                 if (musicId !== 'none') {
                     button.innerHTML += `<div class="music-controls">🎵 Currently Playing</div>`;
                 }
             } else if (this.ownedMusic[musicId]) {
                 button.classList.add('owned');
                 button.innerHTML = `<div>${musicData.name} - OWNED</div>`;
+                if (musicData.description) {
+                    button.innerHTML += `<div class="music-controls">${musicData.description}</div>`;
+                }
                 if (musicId !== 'none') {
                     button.innerHTML += `<div class="music-controls">▶️ Click to Play</div>`;
                 }
@@ -1113,8 +1145,11 @@ class Game {
                 });
             } else {
                 button.innerHTML = `<div>${musicData.name} - ${musicData.price} coins</div>`;
+                if (musicData.description) {
+                    button.innerHTML += `<div class="music-controls">${musicData.description}</div>`;
+                }
                 if (musicId !== 'none') {
-                    button.innerHTML += `<div class="music-controls">🎶 Preview Available</div>`;
+                    button.innerHTML += `<div class="music-controls">🎶 Click to Preview</div>`;
                 }
                 button.addEventListener('click', () => {
                     if (this.totalCoins >= musicData.price) {
