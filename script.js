@@ -576,7 +576,7 @@ class Game {
         try {
             const data = JSON.parse(localStorage.getItem('flappyBirdSave') || '{}');
             this.highScore = data.highScore || { EASY: 0, NORMAL: 0, HARD: 0 };
-            this.totalCoins = data.totalCoins || 10000;
+            this.totalCoins = data.totalCoins || 0;
             this.ownedSkins = data.ownedSkins || { default: true };
             this.currentSkin = data.currentSkin || 'default';
             this.ownedBackgrounds = data.ownedBackgrounds || { default: true };
@@ -590,7 +590,7 @@ class Game {
             console.log('Could not load save data');
             // Set default values including test coins
             this.highScore = { EASY: 0, NORMAL: 0, HARD: 0 };
-            this.totalCoins = 10000;
+            this.totalCoins = 0;
             this.ownedSkins = { default: true };
             this.currentSkin = 'default';
             this.ownedBackgrounds = { default: true };
