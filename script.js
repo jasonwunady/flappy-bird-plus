@@ -506,7 +506,11 @@ class Game {
             classic: { price: 75, name: 'Classic Arcade', file: 'sounds/classic.mp3', description: 'Slower retro feel' },
             ambient: { price: 100, name: 'Ambient Sky', file: 'sounds/ambient.mp3', description: 'Quiet & dreamy' },
             electronic: { price: 125, name: 'Electronic Beat', file: 'sounds/electronic.mp3', description: 'Fast & energetic' },
-            peaceful: { price: 150, name: 'Peaceful Garden', file: 'sounds/peaceful.mp3', description: 'Soft & relaxing' }
+            peaceful: { price: 150, name: 'Peaceful Garden', file: 'sounds/peaceful.mp3', description: 'Soft & relaxing' },
+            funkyChiptune: { price: 200, name: 'Funky Chiptune', file: 'music/Funky-Chiptune.mp3', description: 'High energy 8-bit beats' },
+            bonkersArcade: { price: 225, name: 'Bonkers for Arcades', file: 'music/Bonkers-for-Arcades.mp3', description: 'Retro arcade vibes' },
+            arcadePuzzler: { price: 175, name: 'Arcade Puzzler', file: 'music/Arcade-Puzzler.mp3', description: 'Classic 80s arcade sound' },
+            bitPerplexion: { price: 250, name: '8-Bit Perplexion', file: 'music/8-Bit-Perplexion.mp3', description: 'Quirky chiptune adventure' }
         };
 
         this.powerCooldowns = {};

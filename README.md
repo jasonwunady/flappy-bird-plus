@@ -89,8 +89,8 @@ The project includes several utility scripts for asset generation:
 
 ## Requirements
 
-- Python 3.x
-- Pygame
+- 
+- 
 
 ## License
 
