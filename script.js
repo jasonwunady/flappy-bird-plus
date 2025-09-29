@@ -46,16 +46,16 @@ class Bird {
         this.velocity = FLAP_POWER;
     }
 
-    update() {
+    update(deltaTime = 1/60) {
         this.velocity += GRAVITY;
         this.y += this.velocity;
 
-        // Update wing animation
-        const currentTime = Date.now();
-        if (currentTime - this.lastUpdate > this.animationSpeed * 1000) {
+        // Update wing animation using delta time
+        this.animationTimer += deltaTime;
+        if (this.animationTimer >= this.animationSpeed) {
             this.animationIndex = (this.animationIndex + 1) % this.animationSequence.length;
             this.currentFrame = this.animationSequence[this.animationIndex];
-            this.lastUpdate = currentTime;
+            this.animationTimer = 0;
         }
     }
 
@@ -105,8 +105,8 @@ class Pipe {
         this.gapY = Math.random() * (SCREEN_HEIGHT - this.gap - 200) + 100;
     }
 
-    update() {
-        this.x -= this.speed;
+    update(deltaTime = 1/60) {
+        this.x -= this.speed * (deltaTime * 60); // Normalize speed to 60fps
     }
 
     draw(ctx, assets) {
@@ -184,11 +184,11 @@ class Particle {
         }
     }
 
-    update() {
-        this.x += this.velocityX;
-        this.y += this.velocityY;
-        this.age += 0.016;
-        this.life -= this.decayRate;
+    update(deltaTime = 1/60) {
+        this.x += this.velocityX * (deltaTime * 60);
+        this.y += this.velocityY * (deltaTime * 60);
+        this.age += deltaTime;
+        this.life -= this.decayRate * (deltaTime * 60);
 
         if (this.type === 'rainbow') {
             const hue = (this.baseHue + this.age * 100) % 360;
@@ -221,8 +221,8 @@ class Cloud {
         this.opacity = Math.random() * 0.6 + 0.4;
     }
 
-    update() {
-        this.x += this.speed;
+    update(deltaTime = 1/60) {
+        this.x += this.speed * (deltaTime * 60);
     }
 
     draw(ctx) {
@@ -442,6 +442,12 @@ class Game {
         this.state = GameState.HOME;
         this.difficulty = Difficulty.NORMAL;
 
+        // Frame rate limiting
+        this.targetFPS = 60;
+        this.frameInterval = 1000 / this.targetFPS;
+        this.lastFrameTime = 0;
+        this.deltaTime = 0;
+
         // Initialize clouds
         for (let i = 0; i < 5; i++) {
             this.clouds.push(new Cloud());
@@ -521,6 +527,7 @@ class Game {
         this.musicCheckInterval = null;
         this.lastMusicCheck = Date.now();
         this.lastMusicTime = 0;
+        this.musicEnabled = true;
 
         this.loadSaveData();
         this.setupEventListeners();
@@ -531,7 +538,13 @@ class Game {
         this.initGame();
     }
 
+    isMobile() {
+        return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    }
+
     async initGame() {
+        console.log('Initializing game...');
+
         // Show loading message
         this.ctx.fillStyle = '#87CEEB';
         this.ctx.fillRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
@@ -543,30 +556,37 @@ class Game {
         // Load all assets
         await this.assetLoader.loadAssets();
         this.assetsLoaded = true;
+        console.log('Assets loaded, game ready');
 
-        // Start background music based on current selection
-        try {
-            console.log(`Attempting to start music: ${this.currentMusic}`);
-            if (this.currentMusic !== 'none') {
-                const music = this.getCurrentMusic();
-                if (music) {
-                    const playPromise = music.play();
-                    if (playPromise !== undefined) {
-                        await playPromise;
-                        console.log('Background music started successfully');
-                        this.updateMusicStatus('Playing');
+        // Handle music differently on mobile vs desktop
+        if (this.isMobile()) {
+            console.log('Mobile device detected - music will start on user interaction');
+            this.updateMusicStatus('Ready');
+        } else {
+            // Start background music based on current selection (desktop only)
+            try {
+                console.log(`Attempting to start music: ${this.currentMusic}`);
+                if (this.currentMusic !== 'none') {
+                    const music = this.getCurrentMusic();
+                    if (music) {
+                        const playPromise = music.play();
+                        if (playPromise !== undefined) {
+                            await playPromise;
+                            console.log('Background music started successfully');
+                            this.updateMusicStatus('Playing');
+                        }
+                    } else {
+                        console.log('Music track not found, falling back to default');
+                        this.currentMusic = 'default';
+                        this.saveGameData();
                     }
                 } else {
-                    console.log('Music track not found, falling back to default');
-                    this.currentMusic = 'default';
-                    this.saveGameData();
+                    this.updateMusicStatus('No Music');
                 }
-            } else {
-                this.updateMusicStatus('No Music');
+            } catch (error) {
+                console.log('Background music autoplay blocked - will start on first user interaction:', error.message);
+                this.updateMusicStatus('Ready');
             }
-        } catch (error) {
-            console.log('Background music autoplay blocked - will start on first user interaction:', error.message);
-            this.updateMusicStatus('Blocked');
         }
 
         // Start background music monitoring
@@ -694,6 +714,12 @@ class Game {
             option.addEventListener('click', () => {
                 const diff = option.dataset.difficulty;
                 this.difficulty = Difficulty[diff];
+
+                // Try to start background music on mobile
+                if (this.isMobile()) {
+                    this.tryPlayBackgroundMusic();
+                }
+
                 this.resetGame(true);
             });
         });
@@ -796,16 +822,22 @@ class Game {
         if (music && music.paused) {
             try {
                 console.log('Starting background music after user interaction...');
+                // Set volume lower for mobile devices
+                if (this.isMobile()) {
+                    music.volume = Math.min(music.volume, 0.2);
+                }
+
                 music.play().then(() => {
                     console.log('Background music started successfully after user interaction');
                     this.updateMusicStatus('Playing');
                 }).catch(error => {
-                    console.log('Still could not start background music:', error.message);
-                    this.updateMusicStatus('Blocked');
+                    console.log('Could not start background music:', error.message);
+                    // On mobile, don't show error - just mark as ready
+                    this.updateMusicStatus(this.isMobile() ? 'Ready' : 'Blocked');
                 });
             } catch (error) {
                 console.log('Could not start background music:', error.message);
-                this.updateMusicStatus('Error');
+                this.updateMusicStatus(this.isMobile() ? 'Ready' : 'Error');
             }
         }
     }
@@ -1304,6 +1336,11 @@ class Game {
         this.shieldActive = false;
         this.shieldTimer = 0;
 
+        // On mobile, try to start music when starting gameplay
+        if (keepDifficulty && this.isMobile()) {
+            this.tryPlayBackgroundMusic();
+        }
+
         this.setState(keepDifficulty ? GameState.PLAYING : GameState.HOME);
     }
 
@@ -1317,7 +1354,7 @@ class Game {
     update() {
         if (this.state === GameState.HOME) {
             // Update clouds
-            this.clouds.forEach(cloud => cloud.update());
+            this.clouds.forEach(cloud => cloud.update(this.deltaTime));
 
             // Remove clouds that have moved off screen and add new ones
             this.clouds = this.clouds.filter(cloud => cloud.x < SCREEN_WIDTH + 100);
@@ -1331,14 +1368,14 @@ class Game {
 
         if (this.state !== GameState.PLAYING) return;
 
-        this.bird.update();
+        this.bird.update(this.deltaTime);
 
         // Update particles
-        this.particles = this.particles.filter(particle => particle.update());
+        this.particles = this.particles.filter(particle => particle.update(this.deltaTime));
 
         // Update power cooldowns
         for (const powerId in this.powerCooldowns) {
-            this.powerCooldowns[powerId] -= 1/60;
+            this.powerCooldowns[powerId] -= this.deltaTime;
             if (this.powerCooldowns[powerId] <= 0) {
                 delete this.powerCooldowns[powerId];
             }
@@ -1346,7 +1383,7 @@ class Game {
 
         // Update shield
         if (this.shieldActive) {
-            this.shieldTimer -= 1/60;
+            this.shieldTimer -= this.deltaTime;
             if (this.shieldTimer <= 0) {
                 this.shieldActive = false;
             }
@@ -1354,7 +1391,7 @@ class Game {
 
         // Update pipes and check for score
         for (const pipe of this.pipes) {
-            pipe.update();
+            pipe.update(this.deltaTime);
             if (!pipe.passed && pipe.x < this.bird.x) {
                 pipe.passed = true;
                 this.score++;
@@ -1430,7 +1467,10 @@ class Game {
         }
     }
 
-    gameLoop() {
+    gameLoop(currentTime = 0) {
+        // Simple approach: just use fixed delta time for now
+        this.deltaTime = 1/60;
+
         if (!this.assetsLoaded) {
             // Show loading screen
             this.ctx.fillStyle = '#87CEEB';
@@ -1444,7 +1484,8 @@ class Game {
             this.update();
             this.draw();
         }
-        requestAnimationFrame(() => this.gameLoop());
+
+        requestAnimationFrame((time) => this.gameLoop(time));
     }
 }
 
